@@ -1,0 +1,6 @@
+---
+# file: dbservers.yml
+- hosts: all
+  roles: 
+   - role: dbservers
+

@@ -1,0 +1,53 @@
+---
+# file: roles/dbservers/tasks/main.yml
+- name: Copy the service templates to their respective location in /etc/init
+  template:
+   src: "{{ item.src }}"
+   dest: "{{ item.dest}}"
+   owner: vagrant
+   group: vagrant
+   mode: "{{ item.mode | default (644)}}"
+  with_items:
+   - { src: 'eurekaservice.j2', dest: '/etc/init/eurekaservice.conf' }
+   - { src: 'baseservice.j2', dest: '/etc/init/baseservice.conf' }
+   - { src: 'toppingservice.j2', dest: '/etc/init/toppingservice.conf' }
+   - { src: 'pizzaservice.j2', dest: '/etc/init/pizzaservice.conf' }
+   - { src: 'orderservice.j2', dest: '/etc/init/orderservice.conf' }
+   - { src: 'zuulservice.j2', dest: '/etc/init/zuulservice.conf' }
+
+- name: copy the Eureka Server distributable to the DONEAPI node
+  copy: src=eureka.jar dest=/home/vagrant/eureka.jar owner=vagrant group=vagrant mode=644
+
+- name: start Eureka server 
+  service: name=eurekaservice state=started
+
+- name: copy base service distributable to the DONEAPI node 
+  copy: src=BaseService-Demo.jar dest=/home/vagrant/BaseService-Demo.jar owner=vagrant group=vagrant mode=644
+
+- name: copy order servuce distributable to the DONEAPI node 
+  copy: src=OrderService-Demo.jar dest=/home/vagrant/OrderService-Demo.jar owner=vagrant group=vagrant mode=644
+
+- name: copy pizza service distributable to the DONEAPI node 
+  copy: src=PizzaService-Demo.jar dest=/home/vagrant/PizzaService-Demo.jar owner=vagrant group=vagrant mode=644
+
+- name: copy topping service distributable to the DONEAPI node 
+  copy: src=ToppingService-Demo.jar dest=/home/vagrant/ToppingService-Demo.jar owner=vagrant group=vagrant mode=644
+
+- name: copy zuul service distributable to the DONEAPI node
+  copy: src=zuul-proxy-1.0.jar dest=/home/vagrant/zuul-proxy-1.0.jar owner=vagrant group=vagrant mode=644
+
+- name: start Base Service 
+  service: name=baseservice state=started
+
+- name: start Topping Service
+  service: name=toppingservice state=started
+
+- name: start Pizza Service
+  service: name=pizzaservice state=started
+
+- name: start Order Service
+  service: name=orderservice state=started
+
+- name: start Zuul Service 
+  service: name=zuulservice state=started
+

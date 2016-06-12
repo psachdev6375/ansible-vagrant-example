@@ -1,0 +1,41 @@
+---
+# file: roles/dbservers/tasks/main.yml
+- name: Install the MySQL and all related tools
+  apt: 
+   name: "{{ item }}"
+   state: latest
+   force: yes
+  with_items: ubuntu_mysql_pkgs
+
+- name: Copy the templates to their respective location 
+  template: 
+   src: "{{ item.src }}"
+   dest: "{{ item.dest}}" 
+   owner: vagrant
+   group: vagrant 
+   mode: "{{ item.mode | default (644)}}"
+  with_items: 
+   - { src: 'my.cnf.j2', dest: '/etc/mysql/my.cnf' }
+   - { src: 'root.cnf.j2', dest: '~/.my.cnf', mode: '600' }
+  notify: 
+   - Restart MySQL
+
+- name: update mysql root password for all root accounts
+  mysql_user:
+    name: root
+    host: "{{ item }}"
+    password: "{{ mysql_root_pass }}"
+    priv: "*.*:ALL,GRANT"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - "%"
+    - localhost
+
+- name: copy the Data file to DONEDB Node
+  copy: src=DONE-Capsule-DDLDML.sql dest=/home/vagrant/DONE-Capsule-DDLDML.sql owner=vagrant group=vagrant mode=644
+
+- name: Import Data 
+  shell: mysql -u root < /home/vagrant/DONE-Capsule-DDLDML.sql
+

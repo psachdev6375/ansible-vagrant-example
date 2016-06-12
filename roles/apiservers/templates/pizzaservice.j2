@@ -1,0 +1,14 @@
+description "Pizza Service"
+
+author "Puneet Sachdev"
+
+start on runlevel [3]
+stop on shutdown
+
+expect fork
+
+script
+        cd /home/vagrant
+        java -jar PizzaService-Demo.jar --mysql.ip={{mysql_ip}} --mysql.port={{mysql_port}} > /home/vagrant/pizzaservice.log 2>&1
+        emit pizzaservice_running
+end script

@@ -1,0 +1,8 @@
+---
+mysql_port: 3306
+mysql_bind_address: "0.0.0.0"
+mysql_root_pass: password
+
+ubuntu_mysql_pkgs: 
+ - mysql-server
+ - python-mysqldb

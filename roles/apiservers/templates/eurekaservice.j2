@@ -1,0 +1,14 @@
+description "Eureka Service"
+
+author "Puneet Sachdev"
+
+start on runlevel [3]
+stop on shutdown
+
+expect fork
+
+script
+        cd /home/vagrant
+        java -jar eureka.jar > /home/vagrant/eureka.log 2>&1
+        emit eureka_running
+end script

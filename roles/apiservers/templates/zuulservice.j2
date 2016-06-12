@@ -1,0 +1,14 @@
+description "Eureka Service"
+
+author "Puneet Sachdev"
+
+start on runlevel [3]
+stop on shutdown
+
+expect fork
+
+script
+        cd /home/vagrant
+        java -jar zuul-proxy-1.0.jar > /home/vagrant/zuul.log 2>&1
+        emit zuul_running
+end script

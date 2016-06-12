@@ -1,0 +1,42 @@
+Vagrant.configure(2) do |config|
+	config.vm.define "apiserver" do |api| 
+		api.vm.box = "precise-java/api-base"
+		api.vm.network "private_network", ip: "192.168.0.4"
+		api.vm.provider "virtualbox" do |apivb|
+			apivb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+			apivb.memory=4096
+		end
+		api.vm.provision :ansible do |ansible|
+      		ansible.playbook = "apiservers.yml"
+            ansible.verbose = "vvv"
+            ansible.sudo = true
+        end 
+	end
+	config.vm.define "dbserver" do |db| 
+		db.vm.box = "precise-mysql/db-base"
+		db.vm.network "private_network", ip: "192.168.0.3"
+		db.vm.provider "virtualbox" do |dbvb|
+			dbvb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+		end
+        db.vm.provision :ansible do |ansible|
+			ansible.playbook = "dbservers.yml"
+			ansible.verbose = "vvv"
+            ansible.sudo = true
+        end
+	end
+	if Vagrant.has_plugin?("vagrant-proxyconf")
+		puts "find proxyconf plugin !"
+		if ENV["http_proxy"]
+		  puts "http_proxy: " + ENV["http_proxy"]
+		  config.proxy.http     = ENV["http_proxy"]
+		end
+		if ENV["https_proxy"]
+		  puts "https_proxy: " + ENV["https_proxy"]
+		  config.proxy.https    = ENV["https_proxy"]
+		end
+		if ENV["no_proxy"]
+		  config.proxy.no_proxy = ENV["no_proxy"]
+		end
+		config.vm.box_download_insecure = true
+	end
+end
