@@ -1,5 +1,6 @@
 ---
 # file: apiservers.yml
 - hosts: all
-  roles: 
+  roles:
+   - common 
    - apiservers

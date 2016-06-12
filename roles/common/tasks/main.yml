@@ -1,0 +1,5 @@
+---
+# file: roles/common/tasks/main.yml
+- name: Update apt 
+  apt: update_cache=yes
+
